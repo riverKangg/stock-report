@@ -1,17 +1,13 @@
 import pandas as pd
 import FinanceDataReader as fdr
 
+class getSp500List():
 
-class getSp500List(object):
-    def get_data(self):
-        # 'Name', 'Sector', 'Industry'
-        sp_base = fdr.StockListing('S&P500').set_index('Symbol')
-        return sp_base
+    def get_base_data(self):
+        sp_data = fdr.StockListing('S&P500').set_index('Symbol')
+        return sp_data
 
-    def from_wiki(self):
-        # 'Security', 'GICS Sector', 'GICS Sub-Industry',
-        # 'Headquarters Location', 'Date added', 'CIK', 'Founded'
-        sp_wiki = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
-        sp_wiki_data = pd.read_html(sp_wiki, header=0)[0].set_index('Symbol')
-        return sp_wiki_data
-
+    def get_data_from_wiki(self):
+        wiki_url = 'https://en.wikipedia.org/wiki/List_of_S%26P_500_companies'
+        data_from_wiki = pd.read_html(wiki_url, header=0)[0].set_index('Symbol')
+        return data_from_wiki
