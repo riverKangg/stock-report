@@ -1,6 +1,6 @@
-import numpy as np
 import pytest
 import numbers
+import numpy as np
 from datetime import datetime, timedelta
 from stock_report.add_indicator import addIndicator
 
@@ -75,3 +75,16 @@ def test_ratio_last_brkb(ai_brkb):
     df_last = ai_brkb.ratio_last()
     assert df_last.loc[:, '배당수익률'].values == 0
     assert df_last.loc[:, '배당성향'].values == None
+
+def test_ratio_finYear_appl(ai_aapl):
+    df_finyears = ai_aapl.ratio_finYear()
+    assert df_finyears.shape[0] > 1
+    assert df_finyears.columns.tolist() == ['ROE(%)', 'ROA(%)', '영업이익률(%)', '당기순이익률(%)', 'EPS',
+                                             'PER', 'PBR', 'PSR', 'PCR', '배당수익률', '배당성향']
+    assert (len(list(filter(lambda x: isinstance(x, numbers.Number), df_finyears.iloc[0])))
+            == df_finyears.shape[1])
+
+def test_ratio_finYear_brkb(ai_brkb):
+    df_finyears = ai_brkb.ratio_finYear()
+    assert sum(df_finyears.loc[:, '배당수익률']) == 0
+    assert df_finyears.loc[:,'배당성향'].tolist() == [None] * df_finyears.shape[0]
