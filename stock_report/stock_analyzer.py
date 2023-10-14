@@ -1,6 +1,5 @@
 import pandas as pd
 import yfinance as yf
-from numerize import numerize
 from datetime import datetime, timedelta
 
 class StockAnalyzer:
@@ -49,8 +48,8 @@ class StockAnalyzer:
     # --- ADD INFO
     def add_info(self, df):
         info_data = yf.Ticker(self.ticker).info
-        self.val_df['MarketCap'] = df.loc['marketCap'].apply(lambda x: numerize.numerize(x))
-        self.val_df['Volume'] = numerize.numerize(info_data['volume'])
+        self.val_df['MarketCap'] = df.loc['marketCap']
+        self.val_df['Volume'] = info_data['volume']
         self.val_df['CurrentPrice'] = df.loc['Close'].apply(lambda x: round(x, 3))
         self.val_df['52WeekLow'] = info_data['fiftyTwoWeekLow']
         self.val_df['52WeekHigh'] = info_data['fiftyTwoWeekHigh']
