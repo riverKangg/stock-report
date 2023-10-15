@@ -1,9 +1,9 @@
 import os
-import pandas as pd
 import warnings
-from stock_report.sp500_list_fetcher import SP500ListFetcher
-from stock_report.stock_analyzer import StockAnalyzer
+import pandas as pd
 from numerize import numerize
+from stock_report.stock_analyzer import StockAnalyzer
+from stock_report.sp500_list_fetcher import SP500ListFetcher
 
 warnings.filterwarnings('ignore')
 
@@ -46,28 +46,71 @@ def analyze_or_load_sp500_data(save_directory):
 
     return valuation_data
 
-def get_top_10_market_cap_stocks(valuation_data):
-    if valuation_data is not None:
-        if 'MarketCap' in valuation_data.columns:
-            top_10_market_cap = valuation_data.sort_values(by='MarketCap', ascending=False).head(10)
-            return top_10_market_cap
-        else:
-            print("Column 'MarketCap' not found in the data.")
-    else:
-        print("Data file not found in the specified directory.")
+def add_sp500_info(valuation_data):
+    sp500_data = SP500ListFetcher().get_sp500_data()
+    valuation_data = valuation_data.join(sp500_data)
+    return valuation_data
 
-    return None
+def save_top_securities_to_csv(top_securities, metric, save_directory, group_by=None):
+    if group_by:
+        csv_file_name = f'top_{metric}_{group_by}.csv'
+    else:
+        csv_file_name = f'top_{metric}.csv'
+
+    csv_file_path = os.path.join(save_directory, csv_file_name)
+    top_securities.to_csv(csv_file_path, sep="\t", index=False)
+
+
+def save_grouped_data_to_csv(grouped_data, metric, save_directory):
+    csv_file_name = f'GRP_{metric}.csv'
+    csv_file_path = os.path.join(save_directory, csv_file_name)
+    grouped_data.to_csv(csv_file_path, sep="\t")
+
+
+def get_top_n_securities(valuation_data, metric, n=10, ascending=True, group_by=None):
+    if metric not in valuation_data.columns:
+        print(f"Column '{metric}' not found in the data.")
+        return None
+
+    if group_by:
+        valuation_data = add_sp500_info(valuation_data)
+        valuation_data = valuation_data[valuation_data[metric]>0]
+        top_securities = valuation_data.groupby(group_by).apply(lambda x: x.nsmallest(n, metric))[[metric,'MarketCap']].reset_index()
+        top_securities.columns = [group_by, 'Symbol', metric, 'MarketCap']
+        top_securities[metric] = top_securities[metric].apply(lambda x: round(x, 1))
+        top_securities['MarketCap'] = top_securities['MarketCap'].apply(lambda x: numerize.numerize(x))
+
+        # Calculating the Number of Companies and Average Metric by Sector.
+        grouped_data = valuation_data.groupby(group_by)[metric].agg(['count', 'mean'])
+        grouped_data = grouped_data.sort_values(by='mean')
+        grouped_data['mean'] = grouped_data['mean'].apply(lambda x: round(x, 1))
+        save_grouped_data_to_csv(grouped_data, metric, save_directory)
+
+    else:
+        top_securities = valuation_data.nlargest(n, metric)[[metric]]
+        top_securities[metric] = top_securities[metric].apply(lambda x: numerize.numerize(x))
+        top_securities = top_securities.reset_index()
+        top_securities.columns = ['Symbol', metric]
+
+    return top_securities
+
 
 if __name__ == "__main__":
     save_directory = "sp500_data"
 
-    # Analyze S&P 500 stocks and save the data if not already saved
     analyzed_data = analyze_or_load_sp500_data(save_directory)
+
     if analyzed_data is not None:
         print(analyzed_data.shape)
 
-    # Get the top 10 stocks by MarketCap (in original format, no Large Number Abbreviations)
-    top_10_market_cap_stocks = get_top_10_market_cap_stocks(analyzed_data)
+        # Get the top 10 MarketCap stocks and save to CSV:
+        top_10_market_cap_stocks = get_top_n_securities(analyzed_data, 'MarketCap', n=10, ascending=False)
+        save_top_securities_to_csv(top_10_market_cap_stocks, 'MarketCap', save_directory)
 
-    if top_10_market_cap_stocks is not None:
-        print(top_10_market_cap_stocks)
+        # Get the top 10 PER Sector and save to CSV:
+        top_10_per_sector = get_top_n_securities(analyzed_data, 'PER', n=5, ascending=True, group_by='Sector')
+        save_top_securities_to_csv(top_10_per_sector, 'PER', save_directory, 'Sector')
+
+        # Get the top 10 PBR Sector and save to CSV:
+        top_10_pbr_sector = get_top_n_securities(analyzed_data, 'PBR', n=5, ascending=True, group_by='Sector')
+        save_top_securities_to_csv(top_10_pbr_sector, 'PBR', save_directory, 'Sector')
