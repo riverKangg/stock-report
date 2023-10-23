@@ -1,4 +1,5 @@
 import os
+from stock_report import *
 from datetime import datetime
 
 # 1. CHART LINK - 캡쳐 필요
@@ -9,6 +10,20 @@ content1 = (f"글로벌 증시\n{world_map_link}\n"
             f"섹터별 현황\n{sp500_sector_link}\n{sp500_map_link}")
 
 # 2.
+title_tickers_dic = {}
+title_tickers_dic['US Index ETF'] = ['VTI', 'VOO', 'QQQ', 'TLT']
+title_tickers_dic['Dividend ETF'] = ['SCHD', 'JEPI', 'VNQ']
+title_tickers_dic['S&P500'] = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'GOOGL', 'TSLA', 'META', 'BRK-B', 'GOOG', 'UNH']
+title_tickers_dic['Nasdaq'] = ['AAPL', 'MSFT', 'AMZN', 'NVDA', 'META', 'AVGO', 'TSLA', 'GOOGL', 'GOOG', 'ADBE']
+title_tickers_dic['SCHD'] = ['CSCO', 'AMGN', 'ABBV', 'HD', 'AVGO', 'CVX', 'MRK', 'PEP', 'KO', 'VZ']
+title_tickers_dic['VNQ'] = ['PLD', 'AMT', 'EQIX', 'CCI', 'PSA', 'O', 'SPG', 'WELL', 'DLR']
+
+wp = WeeklyPerformanceAnalyzer()
+for title, tickers in zip(title_tickers_dic.keys(), title_tickers_dic.values()):
+    wp.plot_summary_charts(tickers, title, True)
+
+
+#
 
 # Markdown 작성
 dt = datetime.now().strftime('%y%m%d')
