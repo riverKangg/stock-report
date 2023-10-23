@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import warnings
 import pandas as pd
 
@@ -33,7 +34,7 @@ class WeeklyPerformanceAnalyzer:
             Returns a dataframe containing stock data with only the last date of each week.
         """
         daily_data = self.fetch_stock_data(ticker)
-        weekly_last_dates = daily_data.groupby(daily_data['Date'].dt.week)['Date'].max()
+        weekly_last_dates = daily_data.groupby(daily_data['Date'].dt.strftime('%Y-%U'))['Date'].max()
         weekly_data = daily_data[daily_data['Date'].isin(weekly_last_dates)]
         return weekly_data
 
@@ -62,7 +63,8 @@ class WeeklyPerformanceAnalyzer:
             summary_values = [ticker] + self.generate_summary_values(weekly_data)
             summary_data.append(summary_values)
 
-        summary_table = pd.DataFrame(summary_data, columns=['Ticker', 'Current', 'LastWeekChange', 'High', 'HighChange'])
+        summary_table = pd.DataFrame(summary_data,
+                                     columns=['Ticker', 'Current', 'LastWeekChange', 'High', 'HighChange'])
 
         print(f'★ {ticker_list}')
         print(summary_table)
@@ -128,6 +130,11 @@ class WeeklyPerformanceAnalyzer:
             var = plt_df[ticker]
             plt.plot(var)
             plt.annotate(f'{ticker}  {var[-1]:0.1f}%', xy=(1, var[-1]), xytext=(8, 0),
-                        xycoords=('axes fraction', 'data'), textcoords='offset points')
+                         xycoords=('axes fraction', 'data'), textcoords='offset points')
         plt.legend(plt_df.columns)
         plt.show()
+
+
+if __name__ == '__main__':
+    wp = WeeklyPerformanceAnalyzer()
+    wp.plot_summary_charts(['VTI', 'VOO', 'QQQ', 'TLT'], '미국 지수 ETF')
