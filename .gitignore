@@ -13,6 +13,7 @@ stock_report/output/
 
 # Distribution / packaging
 .Python
+*.iml
 build/
 develop-eggs/
 dist/
