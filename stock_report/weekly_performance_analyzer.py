@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
+import os
 import warnings
 import pandas as pd
-
+from datetime import datetime
 import FinanceDataReader as fdr
 import matplotlib.pyplot as plt
 
@@ -11,6 +12,9 @@ warnings.filterwarnings('ignore')
 class WeeklyPerformanceAnalyzer:
     def __init__(self, start_year='2018'):
         self.start_year = start_year
+        self.TODAY = datetime.now().strftime('%y%m%d')
+        self.OUTPUT_PATH = './output/weekly/'
+        os.makedirs(self.OUTPUT_PATH, exist_ok=True)
 
     def fetch_stock_data(self, ticker):
         """
@@ -70,7 +74,7 @@ class WeeklyPerformanceAnalyzer:
         print(summary_table)
         return summary_table
 
-    def plot_summary_charts(self, ticker_list, title):
+    def plot_summary_charts(self, ticker_list, title, save_file=False):
         ticker_list.reverse()
         df_summary = self.generate_summary_table(ticker_list)
 
@@ -81,15 +85,17 @@ class WeeklyPerformanceAnalyzer:
         indexes, values = df_summary.Ticker, list(map(lambda x: round(x, 2), df_summary.LastWeekChange))
         bars = ax1.barh(indexes, values, height=0.6, color='lightsteelblue')
         ax1.bar_label(bars, padding=-32, color='white', fontweight='900')
-        ax1.set_title(f'{title} Last Week Change')
+        ax1.set_title(f'{title}: Last Week Change')
 
         ax2 = fig.add_subplot(1, 2, 2)
         indexes, values = df_summary.Ticker, list(map(lambda x: round(x, 2), df_summary.HighChange))
         bars = ax2.barh(indexes, values, height=0.6, color='lightcoral')
         ax2.bar_label(bars, padding=-32, color='white', fontweight='900')
-        ax2.set_title(f'{title} High Point Change')
+        ax2.set_title(f'{title}: High Point Change')
 
-        plt.show()
+        if save_file:
+            save_title = title.replace(' ', '')
+            plt.savefig(f'{self.OUTPUT_PATH}/{save_title}_{self.TODAY}.jpg')
 
     # --- Closing Price Trends
     def generate_close_table(self, ticker_list):
@@ -137,4 +143,4 @@ class WeeklyPerformanceAnalyzer:
 
 if __name__ == '__main__':
     wp = WeeklyPerformanceAnalyzer()
-    wp.plot_summary_charts(['VTI', 'VOO', 'QQQ', 'TLT'], '미국 지수 ETF')
+    wp.plot_summary_charts(['VTI', 'VOO', 'QQQ', 'TLT'], 'US Index ETF', True)
