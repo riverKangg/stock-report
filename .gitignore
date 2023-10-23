@@ -6,6 +6,11 @@ __pycache__/
 # C extensions
 *.so
 
+# output files
+output/
+analysis/output/
+stock_report/output/
+
 # Distribution / packaging
 .Python
 build/
