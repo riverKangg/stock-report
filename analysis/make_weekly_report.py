@@ -1,5 +1,7 @@
 import os
+import pandas as pd
 from stock_report import *
+import yfinance as yf
 from datetime import datetime
 
 # 1. CHART LINK - 캡쳐 필요
@@ -22,8 +24,15 @@ wp = WeeklyPerformanceAnalyzer()
 for title, tickers in zip(title_tickers_dic.keys(), title_tickers_dic.values()):
     wp.plot_summary_charts(tickers, title, True)
 
+# 3. News title
+news_df = pd.DataFrame()
+news_ticker_list = ['APPL', 'O', 'XOM']
+for ticker in news_ticker_list:
+    ticker_news = pd.DataFrame(yf.Ticker(ticker).news)
+    ticker_news['ticker'] = ticker
+    news_df = pd.concat([news_df, ticker_news])
+news_df = news_df[['ticker','title','relatedTickers','link']]
 
-#
 
 # Markdown 작성
 dt = datetime.now().strftime('%y%m%d')
