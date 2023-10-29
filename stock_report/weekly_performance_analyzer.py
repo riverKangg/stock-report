@@ -13,7 +13,7 @@ class WeeklyPerformanceAnalyzer:
     def __init__(self, start_year='2018'):
         self.start_year = start_year
         self.TODAY = datetime.now().strftime('%y%m%d')
-        self.OUTPUT_PATH = './output/weekly_graph/'
+        self.OUTPUT_PATH = './output/'
         os.makedirs(self.OUTPUT_PATH, exist_ok=True)
 
     def fetch_stock_data(self, ticker):
@@ -30,7 +30,7 @@ class WeeklyPerformanceAnalyzer:
 
     def generate_weekly_data(self, ticker):
         """
-        Generate weekly stock data based on the last date of each week.
+        Generate weekly_graph stock data based on the last date of each week.
 
         :param ticker: string
             The symbol of the stock (e.g., 'AAPL' for Apple stock).
@@ -52,7 +52,7 @@ class WeeklyPerformanceAnalyzer:
 
     def generate_summary_table(self, ticker_list):
         """
-        Generate a summary table for a list of stock tickers based on weekly data.
+        Generate a summary table for a list of stock tickers based on weekly_graph data.
 
         :param ticker_list: list
             A list of stock ticker symbols (e.g., ['AAPL', 'GOOGL']).
@@ -72,9 +72,10 @@ class WeeklyPerformanceAnalyzer:
 
         print(f'★ {ticker_list}')
         print(summary_table)
+        print('')
         return summary_table
 
-    def plot_summary_charts(self, ticker_list, title, save_file=False):
+    def plot_summary_charts(self, ticker_list, title, file_path=None, return_table=False):
         ticker_list.reverse()
         df_summary = self.generate_summary_table(ticker_list)
 
@@ -85,17 +86,22 @@ class WeeklyPerformanceAnalyzer:
         indexes, values = df_summary.Ticker, list(map(lambda x: round(x, 2), df_summary.LastWeekChange))
         bars = ax1.barh(indexes, values, height=0.6, color='lightsteelblue')
         ax1.bar_label(bars, padding=-32, color='white', fontweight='900')
-        ax1.set_title(f'{title}: Last Week Change')
+        ax1.set_title(f'[{title}] Last Week Change')
 
         ax2 = fig.add_subplot(1, 2, 2)
         indexes, values = df_summary.Ticker, list(map(lambda x: round(x, 2), df_summary.HighChange))
         bars = ax2.barh(indexes, values, height=0.6, color='lightcoral')
         ax2.bar_label(bars, padding=-32, color='white', fontweight='900')
-        ax2.set_title(f'{title}: High Point Change')
+        ax2.set_title(f'[{title}] High Point Change')
 
-        if save_file:
-            save_title = title.replace(' ', '')
+        save_title = title.replace(' ', '')
+        if file_path:
+            plt.savefig(f'{file_path}/{save_title}_{self.TODAY}.jpg')
+        else:
             plt.savefig(f'{self.OUTPUT_PATH}/{save_title}_{self.TODAY}.jpg')
+
+        if return_table:
+            return df_summary
 
     # --- Closing Price Trends
     def generate_close_table(self, ticker_list):
@@ -143,4 +149,4 @@ class WeeklyPerformanceAnalyzer:
 
 if __name__ == '__main__':
     wp = WeeklyPerformanceAnalyzer()
-    wp.plot_summary_charts(['VTI', 'VOO', 'QQQ', 'TLT'], 'US Index ETF', True)
+    wp.plot_summary_charts(['VTI', 'VOO', 'QQQ', 'TLT'], 'US Index ETF')
