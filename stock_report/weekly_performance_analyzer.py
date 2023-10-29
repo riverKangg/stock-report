@@ -13,7 +13,7 @@ class WeeklyPerformanceAnalyzer:
     def __init__(self, start_year='2018'):
         self.start_year = start_year
         self.TODAY = datetime.now().strftime('%y%m%d')
-        self.OUTPUT_PATH = './output/weekly/'
+        self.OUTPUT_PATH = './output/weekly_graph/'
         os.makedirs(self.OUTPUT_PATH, exist_ok=True)
 
     def fetch_stock_data(self, ticker):
