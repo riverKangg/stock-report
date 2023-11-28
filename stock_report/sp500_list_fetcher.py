@@ -1,7 +1,12 @@
 import pandas as pd
 import FinanceDataReader as fdr
 
+
 class SP500ListFetcher:
+    """
+    S&P500 심볼 불러오기
+    get_sp500_data 혹은 get_data_from_wikipedia
+    """
 
     def get_sp500_data(self):
         sp500_data = fdr.StockListing('S&P500').set_index('Symbol')
@@ -16,3 +21,8 @@ class SP500ListFetcher:
     def clean_symbol(self, symbol):
         symbol = symbol.replace('BRKB', 'BRK-B').replace('BFB', 'BF-B')
         return symbol
+
+
+if __name__ == "__main__":
+    fetcher = SP500ListFetcher()
+    data = fetcher.get_sp500_data()
