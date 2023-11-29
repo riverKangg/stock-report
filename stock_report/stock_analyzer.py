@@ -2,6 +2,7 @@ import pandas as pd
 import yfinance as yf
 from datetime import datetime, timedelta
 
+
 class StockAnalyzer:
 
     def __init__(self, ticker):
@@ -81,8 +82,6 @@ class StockAnalyzer:
 
     # --- SHOW REPORT
     def last_quarter_ratios(self):
-        self.val_df = self.val_df.loc[0:0]
-
         df = self.fetch_financial_data(quarterly=True)
         self.idx = list(df.index)
         if 'Net Income' not in self.idx:
