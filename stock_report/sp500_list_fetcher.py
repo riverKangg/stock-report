@@ -10,7 +10,7 @@ class SP500ListFetcher:
 
     def get_sp500_data(self):
         sp500_data = fdr.StockListing('S&P500').set_index('Symbol')
-        sp500_data.index = sp500_data.index.map(self.clean_symbol)
+        sp500_data.index = sp500_data.index #.map(self.clean_symbol)
         return sp500_data
 
     def get_data_from_wikipedia(self):
