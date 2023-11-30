@@ -1,9 +1,11 @@
 import os
 import warnings
 import pandas as pd
+from tqdm import tqdm
 from numerize import numerize
 from stock_report.stock_analyzer import StockAnalyzer
 from stock_report.sp500_list_fetcher import SP500ListFetcher
+from utils import *
 
 warnings.filterwarnings('ignore')
 
@@ -25,7 +27,7 @@ def fetch_or_load_sp500_data(save_directory):
     analyzed_data = {}
     error_tickers = []  # 에러가 발생한 티커 목록
 
-    for ticker in sp500_tickers:
+    for ticker in tqdm(sp500_tickers):
         try:
             stock_analyzer = StockAnalyzer(ticker)
             analyzed_data[ticker] = stock_analyzer.last_quarter_ratios().iloc[0]
@@ -73,6 +75,9 @@ def get_top_n_stocks(valuation_data, metric, n=10, ascending=True, group_by=None
         print(f"Column '{metric}' not found in the data.")
         return None
 
+    valuation_data[metric] = pd.to_numeric(valuation_data[metric], errors='coerce')
+
+
     if group_by:
         valuation_data = add_sp500_info(valuation_data)
         valuation_data = valuation_data[valuation_data[metric]>0]
@@ -97,7 +102,8 @@ def get_top_n_stocks(valuation_data, metric, n=10, ascending=True, group_by=None
 
 
 if __name__ == "__main__":
-    save_directory = "sp500_data"
+    root_dir = get_git_root_directory()
+    save_directory = f"{root_dir}/output/sp500"
 
     analyzed_data = fetch_or_load_sp500_data(save_directory)
 
