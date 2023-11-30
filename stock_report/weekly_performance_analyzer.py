@@ -96,9 +96,9 @@ class WeeklyPerformanceAnalyzer:
 
         save_title = title.replace(' ', '')
         if file_path:
-            plt.savefig(f'{file_path}/{save_title}_{self.TODAY}.jpg')
+            plt.savefig(f'{file_path}/{save_title}_{self.TODAY}.jpg', pad_inches='tight')
         else:
-            plt.savefig(f'{self.OUTPUT_PATH}/{save_title}_{self.TODAY}.jpg')
+            plt.savefig(f'{self.OUTPUT_PATH}/{save_title}_{self.TODAY}.jpg', pad_inches='tight')
 
         if return_table:
             return df_summary
