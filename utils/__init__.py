@@ -1,1 +1,5 @@
+from utils.stock_analyzer import StockAnalyzer
+from utils.sp500_list_fetcher import SP500ListFetcher
+from utils.weekly_performance_analyzer import WeeklyPerformanceAnalyzer
+
 from utils.get_git_root_directory import get_git_root_directory
