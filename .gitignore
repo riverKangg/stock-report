@@ -16,6 +16,7 @@ output/
 # Distribution / packaging
 .Python
 *.iml
+.idea
 build/
 develop-eggs/
 dist/
