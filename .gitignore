@@ -11,8 +11,6 @@ to-do-list
 
 # output files
 output/
-analysis/output/
-stock_report/output/
 *.md
 
 # Distribution / packaging
