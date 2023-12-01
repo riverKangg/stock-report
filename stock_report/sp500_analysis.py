@@ -101,8 +101,8 @@ def get_top_n_stocks(valuation_data, metric, n=10, ascending=True, group_by=None
 
 
 if __name__ == "__main__":
-    root_dir = get_git_root_directory()
-    formatted_date = datetime.now().strftime('%Y-%m-%d')
+    root_dir = get_root_directory()
+    formatted_date = get_formmated_date()
     save_directory = f"{root_dir}/output/sp500_{formatted_date}"
 
     analyzed_data = fetch_or_load_sp500_data(save_directory)
