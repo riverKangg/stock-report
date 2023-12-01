@@ -9,10 +9,6 @@ to-do-list
 # C extensions
 *.so
 
-# output files
-output/
-*.md
-
 # Distribution / packaging
 .Python
 *.iml
