@@ -3,8 +3,7 @@ import warnings
 import pandas as pd
 from tqdm import tqdm
 from numerize import numerize
-from stock_report.stock_analyzer import StockAnalyzer
-from stock_report.sp500_list_fetcher import SP500ListFetcher
+from datetime import datetime
 from utils import *
 
 warnings.filterwarnings('ignore')
@@ -103,7 +102,8 @@ def get_top_n_stocks(valuation_data, metric, n=10, ascending=True, group_by=None
 
 if __name__ == "__main__":
     root_dir = get_git_root_directory()
-    save_directory = f"{root_dir}/output/sp500"
+    today = datetime.today().strftime("%Y%m")
+    save_directory = f"{root_dir}/output/sp500_{today}"
 
     analyzed_data = fetch_or_load_sp500_data(save_directory)
 
