@@ -4,7 +4,7 @@ import yfinance as yf
 from tabulate import tabulate
 from datetime import datetime
 
-from stock_report import *
+from utils import *
 
 dt = datetime.now().strftime('%y%m%d')
 report_path = '/Users/samsung/PycharmProjects/stock-report/output/weekly/'
